@@ -27,6 +27,9 @@ const NewsPreviewPage = ({ news }) => {
   const [theme, setTheme] = useState("light");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
   const previewState = useMemo(() => {
     if (news) {
@@ -129,6 +132,53 @@ const NewsPreviewPage = ({ news }) => {
         day: "numeric",
       })
     : "Draft preview";
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+      return;
+    }
+
+    const timeout = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const res = await databases.listDocuments(
+          DATABASE_ID,
+          POSTS_COLLECTION_ID,
+          [Query.search("title", searchTerm)]
+        );
+
+        const results = (res.documents || []).map((doc) => {
+          let image = null;
+          try {
+            const parsedBlocks =
+              typeof doc.blocks === "string" ? JSON.parse(doc.blocks) : doc.blocks;
+            image = parsedBlocks?.find((block) => block.type === "image")?.src || null;
+          } catch (error) {
+            image = null;
+          }
+
+          return {
+            id: doc.$id,
+            title: doc.title || "Untitled News",
+            image,
+          };
+        });
+
+        setSearchResults(results);
+        setShowSearchDropdown(true);
+      } catch (error) {
+        console.error("❌ Search failed", error);
+        setSearchResults([]);
+        setShowSearchDropdown(true);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
 
   /* -------------------------------
      🔹 Helpers
@@ -543,12 +593,44 @@ const NewsPreviewPage = ({ news }) => {
           </div>
         </div>
         <div className="np-topbar-actions">
-          <input
-            className="np-search-input"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
+          <div className="np-search">
+            <input
+              className="np-search-input"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onFocus={() => searchTerm && setShowSearchDropdown(true)}
+            />
+            {showSearchDropdown && (
+              <div className="np-search-dropdown">
+                {searchLoading ? (
+                  <div className="np-search-empty">Searching...</div>
+                ) : searchResults.length === 0 ? (
+                  <div className="np-search-empty">No News Found</div>
+                ) : (
+                  searchResults.map((result) => (
+                    <button
+                      key={result.id}
+                      className="np-search-item"
+                      onClick={() => {
+                        setShowSearchDropdown(false);
+                        navigate(`/news/${result.id}`);
+                      }}
+                    >
+                      <div className="np-search-thumb">
+                        {result.image ? (
+                          <img src={result.image} alt={result.title} />
+                        ) : (
+                          <span>SA</span>
+                        )}
+                      </div>
+                      <div className="np-search-title">{result.title}</div>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
           <button
             className="np-button"
             onClick={() =>
@@ -564,17 +646,11 @@ const NewsPreviewPage = ({ news }) => {
         <aside className="np-sidebar">
           <div className="np-sidebar-title">About the Author</div>
           <div className="np-sidebar-card">
-            {displayAuthor?.image ? (
-              <img
-                className="np-author-avatar"
-                src={displayAuthor.image}
-                alt={displayAuthor?.name || "Author"}
-              />
-            ) : (
-              <div className="np-author-avatar np-author-avatar-fallback">
-                SA
-              </div>
-            )}
+            <img
+              className="np-author-avatar"
+              src="/admin.png"
+              alt={displayAuthor?.name || "Author"}
+            />
             <div>
               <strong>{displayAuthor?.name || "Staff Reporter"}</strong>
               <div className="np-meta">
@@ -584,6 +660,22 @@ const NewsPreviewPage = ({ news }) => {
             <div className="np-meta">
               {displayAuthor?.about || "Sharing verified stories and updates."}
             </div>
+          </div>
+          <div className="np-sidebar-divider" />
+          <div className="np-sidebar-section">
+            <div className="np-sidebar-title">Explore</div>
+            <button className="np-sidebar-link" type="button">
+              Latest Headlines
+            </button>
+            <button className="np-sidebar-link" type="button">
+              Breaking News
+            </button>
+            <button className="np-sidebar-link" type="button">
+              Local Updates
+            </button>
+            <button className="np-sidebar-link" type="button">
+              Trending Stories
+            </button>
           </div>
         </aside>
 

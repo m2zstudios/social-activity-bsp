@@ -72,6 +72,10 @@
   gap: 12px;
 }
 
+.np-search {
+  position: relative;
+}
+
 .np-button {
   background: var(--np-card);
   color: var(--np-text);
@@ -93,6 +97,72 @@
   padding: 8px 12px;
   color: var(--np-text);
   min-width: 220px;
+}
+
+.np-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--np-card);
+  border: 1px solid var(--np-card-border);
+  border-radius: 12px;
+  box-shadow: var(--np-shadow);
+  z-index: 10;
+  padding: 8px;
+}
+
+.np-search-item {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--np-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.np-search-item:hover {
+  background: var(--np-accent-soft);
+}
+
+.np-search-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--np-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--np-muted);
+  font-weight: 700;
+}
+
+.np-search-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-search-title {
+  font-size: 13px;
+  color: var(--np-text);
+  line-height: 1.4;
+}
+
+.np-search-empty {
+  padding: 12px;
+  color: var(--np-muted);
+  font-size: 13px;
+  text-align: center;
 }
 .np-search-input:focus {
   outline: 2px solid var(--np-accent);
@@ -117,7 +187,7 @@
   border: 1px solid var(--np-card-border);
   border-radius: 20px;
   padding: 22px;
-  height: fit-content;
+  min-height: calc(100vh - 120px);
   box-shadow: var(--np-shadow);
   position: sticky;
   top: 24px;
@@ -862,4 +932,21 @@
   height: 1px;
   background: var(--np-card-border);
   margin: 12px 0;
+}
+
+.np-sidebar-link {
+  background: transparent;
+  border: 1px solid var(--np-card-border);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--np-text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.np-sidebar-link:hover {
+  border-color: var(--np-accent);
+  background: var(--np-accent-soft);
 }
