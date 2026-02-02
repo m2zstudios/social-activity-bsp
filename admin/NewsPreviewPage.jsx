@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import "../admin/components/Stylings/LeftPreview.css";
 
 import waIcon from "/images/social-icons/waicon.png";
@@ -13,22 +13,51 @@ import xIcon from "/images/social-icons/xicon.png";
  * - Loads blocks + styles from DB
  * - NO editor logic
  */
-const NewsPreviewPage = () => {
-  const { newsId } = useParams(); // or slug
+const NewsPreviewPage = ({ news }) => {
+  const { newsId } = useParams();
+  const location = useLocation();
   const [blocks, setBlocks] = useState([]);
   const [theme, setTheme] = useState("light");
   const [loading, setLoading] = useState(true);
+
+  const previewState = useMemo(() => {
+    if (news) {
+      return {
+        blocks: news.blocks || [],
+        theme: news.theme || "light",
+      };
+    }
+
+    if (location.state) {
+      return {
+        blocks: location.state.blocks || [],
+        theme: location.state.theme || "light",
+      };
+    }
+
+    return null;
+  }, [location.state, news]);
 
   /* -------------------------------
      🔹 Fetch news from DB
   -------------------------------- */
   useEffect(() => {
+    if (previewState) {
+      setBlocks(previewState.blocks || []);
+      setTheme(previewState.theme || "light");
+      setLoading(false);
+      return;
+    }
+
+    if (!newsId) {
+      setLoading(false);
+      return;
+    }
+
     const loadNews = async () => {
       try {
-        // 🔁 replace with Appwrite / API call
         const res = await fetch(`/api/news/${newsId}`);
         const data = await res.json();
-
         setBlocks(data.blocks || []);
         setTheme(data.theme || "light");
       } catch (err) {
@@ -39,7 +68,7 @@ const NewsPreviewPage = () => {
     };
 
     loadNews();
-  }, [newsId]);
+  }, [newsId, previewState]);
 
   /* -------------------------------
      🔹 Helpers
@@ -71,6 +100,7 @@ const NewsPreviewPage = () => {
       if (node.marks?.includes("bold")) content = <strong>{content}</strong>;
       if (node.marks?.includes("italic")) content = <em>{content}</em>;
       if (node.marks?.includes("underline")) content = <u>{content}</u>;
+      if (node.marks?.includes("strike")) content = <s>{content}</s>;
       if (node.marks?.includes("highlight")) {
         content = <span style={{ background: "#fde047" }}>{content}</span>;
       }
@@ -108,6 +138,7 @@ const NewsPreviewPage = () => {
               <img
                 src={SOCIAL_ICON_URLS[key]}
                 className={`social-icon ${key}`}
+                alt={`${key} social icon`}
               />
             </a>
           ) : null
@@ -149,38 +180,68 @@ const NewsPreviewPage = () => {
       case "subheading":
         return withLink(
           block,
-          <h3
-            className="lp-subheading"
-            style={{
-              fontSize: block.styles?.fontSize,
-              fontWeight: block.styles?.fontWeight,
-              color: getTextColor(block, theme),
-              textAlign: block.styles?.textAlign,
-              textTransform: block.styles?.textTransform,
-              margin: block.styles?.margin,
-            }}
-          >
-            {block.text}
-          </h3>
+          <div style={{ margin: block.styles?.margin }}>
+            <h3
+              className="lp-subheading"
+              style={{
+                fontSize: block.styles?.fontSize,
+                fontWeight: block.styles?.fontWeight,
+                color: getTextColor(block, theme),
+                textAlign: block.styles?.textAlign,
+                textTransform: block.styles?.textTransform,
+              }}
+            >
+              {block.text}
+            </h3>
+
+            {block.styles?.divider && (
+              <div
+                style={{
+                  height: 2,
+                  width: "40px",
+                  background: "#3b82f6",
+                  margin:
+                    block.styles.textAlign === "center"
+                      ? "8px auto 0"
+                      : "8px 0 0",
+                }}
+              />
+            )}
+          </div>
         );
 
       case "image":
-        return (
+        return withLink(
+          block,
           <div className="lp-image">
-            <img
-              src={block.src}
-              alt={block.alt || ""}
-              className={`lp-image-${block.size}`}
+            <div
+              className="lp-image-inner"
               style={{
-                borderRadius: block.radius,
-                boxShadow:
-                  block.shadow === "soft"
-                    ? "0 10px 25px rgba(0,0,0,.15)"
-                    : block.shadow === "strong"
-                    ? "0 20px 40px rgba(0,0,0,.35)"
-                    : "none",
+                justifyContent:
+                  block.align === "left"
+                    ? "flex-start"
+                    : block.align === "right"
+                    ? "flex-end"
+                    : "center",
               }}
-            />
+            >
+              <img
+                src={block.src}
+                alt={block.alt || ""}
+                className={`lp-image-${block.size}`}
+                style={{
+                  borderRadius: block.radius,
+                  boxShadow:
+                    block.shadow === "soft"
+                      ? "0 10px 25px rgba(0,0,0,.15)"
+                      : block.shadow === "strong"
+                      ? "0 20px 40px rgba(0,0,0,.35)"
+                      : "none",
+                  background: block.background,
+                  cursor: block.lightbox ? "zoom-in" : "default",
+                }}
+              />
+            </div>
             {block.caption && (
               <div className="lp-image-caption">{block.caption}</div>
             )}
@@ -191,6 +252,10 @@ const NewsPreviewPage = () => {
         );
 
       case "gallery":
+        if ((block.images || []).length === 0) {
+          return null;
+        }
+
         return (
           <div
             className="lp-gallery"
@@ -200,46 +265,197 @@ const NewsPreviewPage = () => {
               gap: 12,
             }}
           >
-            {(block.images || []).map((img, i) => (
-              <figure key={i}>
-                <img src={img.src} alt={img.alt || ""} />
-                {img.caption && <figcaption>{img.caption}</figcaption>}
-              </figure>
-            ))}
+            {(block.images || []).map((img, i) => {
+              const imageEl = (
+                <img
+                  src={img.src}
+                  alt={img.alt || ""}
+                  style={{
+                    width: "100%",
+                    borderRadius: 8,
+                    cursor: img.link?.url ? "pointer" : "default",
+                  }}
+                />
+              );
+
+              return (
+                <figure
+                  key={img.id || img.url || `img-${i}`}
+                  style={{ textAlign: "center" }}
+                >
+                  {img.link?.url ? (
+                    <a
+                      href={img.link.url}
+                      target={img.link.target || "_self"}
+                      rel="noopener noreferrer"
+                    >
+                      {imageEl}
+                    </a>
+                  ) : (
+                    imageEl
+                  )}
+
+                  {img.caption && (
+                    <figcaption className="lp-gallery-caption">
+                      {img.caption}
+                    </figcaption>
+                  )}
+
+                  {img.credit && (
+                    <div className="lp-image-credit">
+                      Source: {img.credit}
+                    </div>
+                  )}
+                </figure>
+              );
+            })}
           </div>
         );
 
       case "author":
-        return (
-          <div className="lp-author default">
-            <img src={block.author.image} />
-            <div>
-              <h4>{block.author.name}</h4>
-              <p className="role">{block.author.role}</p>
-              <p>{block.author.about}</p>
-              <AuthorSocialIcons socials={block.socials} position="bottom-right" />
+        if (!block.author) {
+          return null;
+        }
+
+        const bg =
+          block.backgroundImage &&
+          (block.style === "cover" || block.applyBgToAll)
+            ? `url(${block.backgroundImage})`
+            : undefined;
+
+        if ((block.style || "default") === "default") {
+          return (
+            <div className="lp-author default">
+              <img
+                src={block.author.image}
+                style={{
+                  backgroundImage: bg,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+              <div>
+                <h4>{block.author.name}</h4>
+                <p className="role">{block.author.role}</p>
+                <p>{block.author.about}</p>
+              </div>
             </div>
-          </div>
-        );
+          );
+        }
+
+        if (block.style === "centered-social") {
+          const socials = block.socials || {};
+
+          return (
+            <div
+              className="lp-author cover centered centered-social"
+              style={{
+                backgroundImage: block.backgroundImage
+                  ? `url(${block.backgroundImage})`
+                  : undefined,
+              }}
+            >
+              <div className="centered-social-layout">
+                <AuthorSocialIcons
+                  socials={{
+                    whatsapp: socials.whatsapp,
+                    instagram: socials.instagram,
+                  }}
+                  position="row"
+                  showText={false}
+                />
+
+                <div className="author-overlay-box">
+                  <div className="author-center">
+                    <img src={block.author.image} />
+                    <h4>{block.author.name}</h4>
+                    <p className="role">{block.author.role}</p>
+                    <p>{block.author.about}</p>
+                  </div>
+                </div>
+
+                <AuthorSocialIcons
+                  socials={{
+                    facebook: socials.facebook,
+                    twitter: socials.twitter,
+                  }}
+                  position="row"
+                  showText={false}
+                />
+              </div>
+            </div>
+          );
+        }
+
+        if (block.style === "default-social") {
+          return (
+            <div className="lp-author default" style={{ backgroundImage: bg }}>
+              <img src={block.author.image} />
+              <div>
+                <h4>{block.author.name}</h4>
+                <p className="role">{block.author.role}</p>
+                <p>{block.author.about}</p>
+                <AuthorSocialIcons
+                  socials={block.socials}
+                  position="bottom-right"
+                  showText={true}
+                />
+              </div>
+            </div>
+          );
+        }
+
+        if (block.style === "cover") {
+          return (
+            <div
+              className="lp-author cover"
+              style={{
+                backgroundImage: `url(${block.backgroundImage})`,
+              }}
+            >
+              <div className="overlay">
+                <img src={block.author.image} />
+                <h4>{block.author.name}</h4>
+                <p className="role">{block.author.role}</p>
+                <p>{block.author.about}</p>
+              </div>
+            </div>
+          );
+        }
+
+        return null;
 
       case "quote":
         return (
-          <blockquote className="lp-quote">
+          <blockquote
+            className="lp-quote"
+            style={{
+              color: getTextColor(block, theme),
+              borderLeftColor: "#3b82f6",
+            }}
+          >
             “{block.text}”
           </blockquote>
         );
 
       case "list":
         return (
-          <ul className="lp-list">
-            {(block.items || []).map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
+          <ul
+            className="lp-list"
+            style={{
+              color: getTextColor(block, theme),
+            }}
+          >
+            {(block.items || [])
+              .filter((item) => item.trim() !== "")
+              .map((item, i) => (
+                <li key={`${block.id}-item-${i}`}>{item}</li>
+              ))}
           </ul>
         );
 
       case "ad":
-        return <div className="lp-ad">Advertisement</div>;
+        return <div className="lp-ad">Advertisement – {block.variant}</div>;
 
       default:
         return null;
@@ -250,11 +466,14 @@ const NewsPreviewPage = () => {
      🔹 Render
   -------------------------------- */
   if (loading) return <div className="left-preview">Loading…</div>;
+  if (blocks.length === 0) {
+    return <div className="left-preview">No preview content available.</div>;
+  }
 
   return (
     <div className="left-preview">
-      {blocks.map((block) => (
-        <div key={block.id} className="preview-block">
+      {blocks.map((block, index) => (
+        <div key={block.id || `preview-${index}`} className="preview-block">
           <div className="preview-content">{renderBlock(block)}</div>
         </div>
       ))}
