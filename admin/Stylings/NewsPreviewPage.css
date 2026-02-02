@@ -193,6 +193,17 @@
   top: 24px;
 }
 
+@media (max-width: 900px) {
+  .np-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .np-sidebar {
+    position: static;
+    min-height: auto;
+  }
+}
+
 .np-sidebar-title {
   font-size: 13px;
   font-weight: 700;

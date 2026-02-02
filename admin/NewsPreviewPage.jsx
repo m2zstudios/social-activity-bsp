@@ -149,12 +149,61 @@ const NewsPreviewPage = ({ news }) => {
           [Query.limit(50)]
         );
 
+        // 🔍 Scoring-based search (word matches > character matches)
+        const getSearchScore = (doc, term) => {
+          const normalizedTerm = term.trim().toLowerCase();
+          if (!normalizedTerm) return 0;
+
+          const fields = [
+            doc.title,
+            doc.description,
+            doc.content,
+            doc.slug,
+          ]
+            .filter(Boolean)
+            .map((value) => String(value).toLowerCase());
+
+          // Include block text content for better coverage
+          let blockText = "";
+          try {
+            const parsedBlocks =
+              typeof doc.blocks === "string" ? JSON.parse(doc.blocks) : doc.blocks;
+            blockText = (parsedBlocks || [])
+              .map((block) => block.text || "")
+              .join(" ")
+              .toLowerCase();
+          } catch (error) {
+            blockText = "";
+          }
+
+          const fullText = [...fields, blockText].join(" ");
+          if (!fullText) return 0;
+
+          const words = normalizedTerm.split(/\s+/).filter(Boolean);
+          let score = 0;
+
+          // Word matches carry more weight
+          words.forEach((word) => {
+            const wordMatches = fullText.split(word).length - 1;
+            score += wordMatches * 10;
+          });
+
+          // Character matches carry lower weight
+          const charMatches = fullText.split(normalizedTerm).length - 1;
+          score += charMatches * 2;
+
+          return score;
+        };
+
         const normalizedTerm = searchTerm.trim().toLowerCase();
         const results = (res.documents || [])
-          .filter((doc) =>
-            (doc.title || "").toLowerCase().includes(normalizedTerm)
-          )
           .map((doc) => {
+            const score = getSearchScore(doc, normalizedTerm);
+            return { doc, score };
+          })
+          .filter(({ score }) => score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map(({ doc }) => {
           let image = null;
           try {
             const parsedBlocks =
