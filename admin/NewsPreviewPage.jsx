@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "../admin/components/Stylings/LeftPreview.css";
+import {
+  databases,
+  DATABASE_ID,
+  POSTS_COLLECTION_ID,
+  Query,
+} from "./appwrite/appwrite";
 
 import waIcon from "/images/social-icons/waicon.png";
 import igIcon from "/images/social-icons/igicon.png";
@@ -56,10 +62,28 @@ const NewsPreviewPage = ({ news }) => {
 
     const loadNews = async () => {
       try {
-        const res = await fetch(`/api/news/${newsId}`);
-        const data = await res.json();
-        setBlocks(data.blocks || []);
-        setTheme(data.theme || "light");
+        let doc = null;
+        const res = await databases.listDocuments(
+          DATABASE_ID,
+          POSTS_COLLECTION_ID,
+          [Query.equal("slug", newsId)]
+        );
+
+        doc = res.documents?.[0] || null;
+
+        if (!doc && newsId.length > 20) {
+          doc = await databases.getDocument(
+            DATABASE_ID,
+            POSTS_COLLECTION_ID,
+            newsId
+          );
+        }
+
+        const parsedBlocks =
+          typeof doc?.blocks === "string" ? JSON.parse(doc.blocks) : doc?.blocks;
+
+        setBlocks(parsedBlocks || []);
+        setTheme(doc?.theme || "light");
       } catch (err) {
         console.error("❌ Failed to load news", err);
       } finally {
