@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import "../admin/components/Stylings/LeftPreview.css";
+import "./Stylings/NewsPreviewPage.css";
 import {
   databases,
   DATABASE_ID,
