@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Stylings/NewsPreviewPage.css";
 import {
   databases,
@@ -22,15 +22,20 @@ import xIcon from "/images/social-icons/xicon.png";
 const NewsPreviewPage = ({ news }) => {
   const { newsId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [blocks, setBlocks] = useState([]);
   const [theme, setTheme] = useState("light");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const previewState = useMemo(() => {
     if (news) {
       return {
         blocks: news.blocks || [],
         theme: news.theme || "light",
+        title: news.title,
+        author: news.author,
+        createdDate: news.createdDate || news.publishedAt,
       };
     }
 
@@ -38,6 +43,9 @@ const NewsPreviewPage = ({ news }) => {
       return {
         blocks: location.state.blocks || [],
         theme: location.state.theme || "light",
+        title: location.state.title,
+        author: location.state.author,
+        createdDate: location.state.postSettings?.createdDate,
       };
     }
 
@@ -94,12 +102,40 @@ const NewsPreviewPage = ({ news }) => {
     loadNews();
   }, [newsId, previewState]);
 
+  const displayTitle =
+    previewState?.title ||
+    news?.title ||
+    location.state?.title ||
+    "Untitled News";
+
+  const displayAuthor =
+    previewState?.author ||
+    news?.author ||
+    location.state?.author ||
+    null;
+
+  const displayDate =
+    previewState?.createdDate ||
+    news?.createdDate ||
+    news?.publishedAt ||
+    location.state?.postSettings?.createdDate ||
+    location.state?.postSettings?.publishedAt ||
+    null;
+
+  const formattedDate = displayDate
+    ? new Date(displayDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Draft preview";
+
   /* -------------------------------
      🔹 Helpers
   -------------------------------- */
-  const getTextColor = (block, theme) => {
+  const getTextColor = (block, currentTheme) => {
     if (block.styles?.isCustomColor) return block.styles.color;
-    return theme === "light" ? "#020617" : "#e5e7eb";
+    return currentTheme === "light" ? "#020617" : "#e5e7eb";
   };
 
   const withLink = (block, content) => {
@@ -153,15 +189,15 @@ const NewsPreviewPage = ({ news }) => {
     if (!socials) return null;
 
     return (
-      <div className={`author-socials ${position}`}>
-        {showText && <span className="follow-text">Follow Me On</span>}
+      <div className={`np-author-socials ${position}`}>
+        {showText && <span className="np-follow-text">Follow Me On</span>}
 
         {Object.entries(socials).map(([key, url]) =>
           url ? (
             <a key={key} href={url} target="_blank" rel="noreferrer">
               <img
                 src={SOCIAL_ICON_URLS[key]}
-                className={`social-icon ${key}`}
+                className={`np-social-icon ${key}`}
                 alt={`${key} social icon`}
               />
             </a>
@@ -182,7 +218,7 @@ const NewsPreviewPage = ({ news }) => {
         return withLink(
           block,
           <p
-            className={`lp-paragraph ${block.variant}`}
+            className={`np-paragraph ${block.variant || ""}`}
             style={{
               fontSize: block.styles?.fontSize,
               color: getTextColor(block, theme),
@@ -206,7 +242,7 @@ const NewsPreviewPage = ({ news }) => {
           block,
           <div style={{ margin: block.styles?.margin }}>
             <h3
-              className="lp-subheading"
+              className="np-subheading"
               style={{
                 fontSize: block.styles?.fontSize,
                 fontWeight: block.styles?.fontWeight,
@@ -237,9 +273,9 @@ const NewsPreviewPage = ({ news }) => {
       case "image":
         return withLink(
           block,
-          <div className="lp-image">
+          <div className="np-image">
             <div
-              className="lp-image-inner"
+              className="np-image-inner"
               style={{
                 justifyContent:
                   block.align === "left"
@@ -252,7 +288,7 @@ const NewsPreviewPage = ({ news }) => {
               <img
                 src={block.src}
                 alt={block.alt || ""}
-                className={`lp-image-${block.size}`}
+                className={`np-image-${block.size}`}
                 style={{
                   borderRadius: block.radius,
                   boxShadow:
@@ -267,10 +303,10 @@ const NewsPreviewPage = ({ news }) => {
               />
             </div>
             {block.caption && (
-              <div className="lp-image-caption">{block.caption}</div>
+              <div className="np-image-caption">{block.caption}</div>
             )}
             {block.credit && (
-              <div className="lp-image-credit">Source: {block.credit}</div>
+              <div className="np-image-credit">Source: {block.credit}</div>
             )}
           </div>
         );
@@ -282,7 +318,7 @@ const NewsPreviewPage = ({ news }) => {
 
         return (
           <div
-            className="lp-gallery"
+            className="np-gallery"
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${block.columns || 3}, 1fr)`,
@@ -320,13 +356,13 @@ const NewsPreviewPage = ({ news }) => {
                   )}
 
                   {img.caption && (
-                    <figcaption className="lp-gallery-caption">
+                    <figcaption className="np-gallery-caption">
                       {img.caption}
                     </figcaption>
                   )}
 
                   {img.credit && (
-                    <div className="lp-image-credit">
+                    <div className="np-image-credit">
                       Source: {img.credit}
                     </div>
                   )}
@@ -349,7 +385,7 @@ const NewsPreviewPage = ({ news }) => {
 
         if ((block.style || "default") === "default") {
           return (
-            <div className="lp-author default">
+            <div className="np-author default">
               <img
                 src={block.author.image}
                 style={{
@@ -372,14 +408,14 @@ const NewsPreviewPage = ({ news }) => {
 
           return (
             <div
-              className="lp-author cover centered centered-social"
+              className="np-author cover centered centered-social"
               style={{
                 backgroundImage: block.backgroundImage
                   ? `url(${block.backgroundImage})`
                   : undefined,
               }}
             >
-              <div className="centered-social-layout">
+              <div className="np-centered-social-layout">
                 <AuthorSocialIcons
                   socials={{
                     whatsapp: socials.whatsapp,
@@ -389,8 +425,8 @@ const NewsPreviewPage = ({ news }) => {
                   showText={false}
                 />
 
-                <div className="author-overlay-box">
-                  <div className="author-center">
+                <div className="np-author-overlay-box">
+                  <div className="np-author-center">
                     <img src={block.author.image} />
                     <h4>{block.author.name}</h4>
                     <p className="role">{block.author.role}</p>
@@ -413,7 +449,7 @@ const NewsPreviewPage = ({ news }) => {
 
         if (block.style === "default-social") {
           return (
-            <div className="lp-author default" style={{ backgroundImage: bg }}>
+            <div className="np-author default" style={{ backgroundImage: bg }}>
               <img src={block.author.image} />
               <div>
                 <h4>{block.author.name}</h4>
@@ -432,7 +468,7 @@ const NewsPreviewPage = ({ news }) => {
         if (block.style === "cover") {
           return (
             <div
-              className="lp-author cover"
+              className="np-author cover"
               style={{
                 backgroundImage: `url(${block.backgroundImage})`,
               }}
@@ -452,7 +488,7 @@ const NewsPreviewPage = ({ news }) => {
       case "quote":
         return (
           <blockquote
-            className="lp-quote"
+            className="np-quote"
             style={{
               color: getTextColor(block, theme),
               borderLeftColor: "#3b82f6",
@@ -465,7 +501,7 @@ const NewsPreviewPage = ({ news }) => {
       case "list":
         return (
           <ul
-            className="lp-list"
+            className="np-list"
             style={{
               color: getTextColor(block, theme),
             }}
@@ -479,7 +515,7 @@ const NewsPreviewPage = ({ news }) => {
         );
 
       case "ad":
-        return <div className="lp-ad">Advertisement – {block.variant}</div>;
+        return <div className="np-ad">Advertisement – {block.variant}</div>;
 
       default:
         return null;
@@ -489,18 +525,95 @@ const NewsPreviewPage = ({ news }) => {
   /* -------------------------------
      🔹 Render
   -------------------------------- */
-  if (loading) return <div className="left-preview">Loading…</div>;
-  if (blocks.length === 0) {
-    return <div className="left-preview">No preview content available.</div>;
-  }
+  if (loading) return <div className="np-left-preview">Loading…</div>;
 
   return (
-    <div className="left-preview">
-      {blocks.map((block, index) => (
-        <div key={block.id || `preview-${index}`} className="preview-block">
-          <div className="preview-content">{renderBlock(block)}</div>
+    <div className="news-preview-page" data-theme={theme}>
+      <header className="np-topbar">
+        <div className="np-topbar-left">
+          <button className="np-button" onClick={() => navigate(-1)}>
+            Back
+          </button>
+          <div className="np-site">
+            <h1 className="np-site-title">Social Activity BSP</h1>
+            <span className="np-site-tagline">
+              24/7 Digital News Network | Breaking stories, social updates &
+              real voices from the ground.
+            </span>
+          </div>
         </div>
-      ))}
+        <div className="np-topbar-actions">
+          <input
+            className="np-search-input"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+          <button
+            className="np-button"
+            onClick={() =>
+              setTheme((prev) => (prev === "light" ? "dark" : "light"))
+            }
+          >
+            {theme === "light" ? "Dark Mode" : "Light Mode"}
+          </button>
+        </div>
+      </header>
+
+      <div className="np-layout">
+        <aside className="np-sidebar">
+          <div className="np-sidebar-title">About the Author</div>
+          <div className="np-sidebar-card">
+            {displayAuthor?.image ? (
+              <img
+                className="np-author-avatar"
+                src={displayAuthor.image}
+                alt={displayAuthor?.name || "Author"}
+              />
+            ) : (
+              <div className="np-author-avatar np-author-avatar-fallback">
+                SA
+              </div>
+            )}
+            <div>
+              <strong>{displayAuthor?.name || "Staff Reporter"}</strong>
+              <div className="np-meta">
+                {displayAuthor?.role || "News Desk"}
+              </div>
+            </div>
+            <div className="np-meta">
+              {displayAuthor?.about || "Sharing verified stories and updates."}
+            </div>
+          </div>
+        </aside>
+
+        <main className="np-main">
+          <section className="np-article-header">
+            <h2 className="np-article-title">{displayTitle}</h2>
+            <div className="np-article-meta">
+              <span>{formattedDate}</span>
+              <span>{displayAuthor?.name || "Social Activity BSP"}</span>
+            </div>
+          </section>
+
+          <section className="np-left-preview">
+            {blocks.length === 0 ? (
+              <div className="np-empty-preview">
+                No preview content available.
+              </div>
+            ) : (
+              blocks.map((block, index) => (
+                <div
+                  key={block.id || `preview-${index}`}
+                  className="np-preview-block"
+                >
+                  <div className="np-preview-content">{renderBlock(block)}</div>
+                </div>
+              ))
+            )}
+          </section>
+        </main>
+      </div>
     </div>
   );
 };
