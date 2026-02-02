@@ -1,0 +1,174 @@
+/* =========================
+   NEWS HEADER WRAPPER
+========================= */
+.news-header {
+  width: 100%;
+  background: #020617;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================
+   🔴 TOP BREAKING STRIP
+========================= */
+.top-strip {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   📰 LOGO ROW WITH GRADIENT
+   + WHITE GLOW
+========================= */
+.logo-row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e3a8a 35%,
+    #dc2626 70%,
+    #7f1d1d 100%
+  );
+}
+
+/* 🔆 WHITE GLOW BEHIND LOGO */
+.logo-row::before {
+  content: "";
+  position: absolute;
+
+  /* 🔽 AREA KAM KIYA */
+  width: 1200px;
+  height: 500px;
+
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.4) 28%,
+    rgba(255, 255, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0.06) 60%,
+    rgba(255, 255, 255, 0) 75%
+  );
+
+  filter: blur(14px);
+  z-index: 1;
+}
+
+
+/* 🖼️ LOGO IMAGE */
+.logo-row img {
+  
+  z-index: 2;
+
+  height: 200px;
+  width:600px;
+ 
+  
+
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.65));
+}
+
+/* =========================
+   🔵 NAVIGATION BAR
+========================= */
+.news-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  padding: 10px 0;
+}
+
+/* =========================
+   NAV LINKS
+========================= */
+.news-link {
+  color: #e5e7eb;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  position: relative;
+  padding-bottom: 4px;
+  transition: 0.25s ease;
+}
+
+.news-link:hover,
+.news-link.active {
+  color: #ffffff;
+}
+
+/* GOLD UNDERLINE */
+.news-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background: #facc15;
+  transition: 0.25s ease;
+}
+
+.news-link:hover::after,
+.news-link.active::after {
+  width: 100%;
+}
+
+/* =========================
+   🔴 ADMIN BUTTON
+========================= */
+.news-admin {
+  background: #dc2626;
+  color: white;
+  padding: 7px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.news-admin:hover {
+  background: #b91c1c;
+}
+
+/* =========================
+   📱 MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .logo-row {
+    padding: 20px 0;
+  }
+
+  .logo-row::before {
+    width: 300px;
+    height: 160px;
+  }
+
+  .logo-row img {
+    height: 65px;
+  }
+
+  .news-nav {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .news-link {
+    font-size: 14px;
+  }
+}
+.logo-link {
+  display: inline-flex;
+  cursor: pointer;
+}

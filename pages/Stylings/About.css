@@ -1,0 +1,89 @@
+.about-page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+/* Header */
+.about-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-header h1 {
+  font-size: 36px;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+.about-header p {
+  font-size: 16px;
+  color: #555;
+  max-width: 700px;
+  margin: auto;
+}
+
+/* Content */
+.about-content {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.about-intro {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 35px;
+  line-height: 1.7;
+}
+
+/* Grid */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+
+/* Cards */
+.about-card {
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.about-card h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.about-card p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Note */
+.about-note {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.about-note p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-header h1 {
+    font-size: 28px;
+  }
+}
+.about-header p {
+    font-size: 14px;
+  }

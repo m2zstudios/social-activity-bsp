@@ -1,0 +1,24 @@
+.home-category-section {
+  margin: 40px 0;
+}
+
+.category-header {
+  margin-bottom: 12px;
+}
+
+.category-news-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.arrow-btn,
+.see-more-btn {
+  min-width: 80px;
+  font-size: 18px;
+  cursor: pointer;
+}
+.arrow-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

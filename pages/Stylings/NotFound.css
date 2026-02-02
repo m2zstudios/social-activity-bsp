@@ -1,0 +1,97 @@
+#notfound-page{
+  background-color:#141019;
+  background: radial-gradient(at 50% -20%, #908392, #0d060e) fixed;
+}
+
+
+
+#handboy
+{
+   animation: swing ease-in-out 1.3s infinite alternate;
+    transform-origin: 98% 98%;
+    transform-box: fill-box;
+    
+}
+
+
+#girllight
+{
+   animation: swing ease-in-out 1.3s infinite alternate;
+    transform-origin: 0% 97%;
+    transform-box: fill-box;
+}
+
+#hairgirl
+{
+    animation: swinghair ease-in-out 1.3s infinite alternate;
+   transform-origin: 60% 0%;
+    transform-box: fill-box;
+  
+}
+
+#zero {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform-style: preserve-3d; /* Required for rotateY */
+}
+
+
+/*************swing************/
+@keyframes swing {
+    0% { transform: rotate(10deg); }
+    100% { transform: rotate(-10deg); }
+}
+
+
+/*************swing hair************/
+@keyframes swinghair {
+    0% { transform: rotate(6deg); }
+    100% { transform: rotate(-6deg); }
+}
+.rowt {
+  perspective: 800px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* prevent scrolling */
+}
+
+
+.bubble-btn {
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px; /* bubble */
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 3;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  
+}
+
+.bubble-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.bubble-btn:active {
+  transform: scale(0.96);
+}
+ /* You may need to set a specific width for this to work correctly in all browsers */
+
+
+.button-link{
+    text-decoration: none;
+    display:block;
+    margin:auto;
+    width:100vh;
+    opacity: 1;
+}

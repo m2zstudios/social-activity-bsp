@@ -1,0 +1,153 @@
+.breaking-main {
+  flex: 3;
+  padding: 7px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+/* IMAGE WRAPPER (MOST IMPORTANT) */
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+}
+
+/* 👇 VERY IMPORTANT */
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  border: 1px solid black;
+  z-index: 1;   /* image niche */
+  padding: 1px;
+}
+
+
+/* CONTROLS INSIDE IMAGE */
+.img-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) scale(0.92);
+  background: rgba(255, 255, 255, 0.20);
+  color: #fff;
+  border: none;
+  padding: 14px 14px;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 10;
+
+  /* 🔴 ADD THIS */
+  border-radius: 50%;
+
+  /* hidden by default */
+  opacity: 0;
+  pointer-events: none;
+
+  /* smooth disappear */
+  transition:
+    opacity 2s ease,
+    transform 1.5s ease;
+}
+
+/* positions */
+.img-btn.left {
+  left: 10px;
+}
+
+.img-btn.right {
+  right: 10px;
+}
+
+/* INSTANT show when cursor comes near image */
+.image-wrapper:hover .img-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
+
+  /* instant appear */
+  transition:
+    opacity 0.05s ease,
+    transform 0.15s ease;
+}
+
+
+/* THUMBNAILS */
+.thumb-row {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.thumb {
+  width: 80px;
+  height: 55px;
+  object-fit: cover;
+  cursor: pointer;
+  opacity: 0.6;
+  border: 2px solid transparent;
+}
+
+.thumb.active {
+  opacity: 1;
+  border-color: #000;
+}
+
+/* TEXT */
+.breaking-title {
+  font-size: 20px;
+  margin: 10px 0 6px;
+}
+
+.breaking-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #444;
+}
+.breaking-date {
+  font-size: 12px;
+  color: #888; 
+    margin-top: 8px;
+}
+
+/* DOTS INSIDE IMAGE */
+/* SYMBOL INDICATORS */
+.line-indicators {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.line {
+  width: 22px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.line.active {
+  background: #fff;
+}
+
+.breaking-description {
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.read-more {
+  color: #d00;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}

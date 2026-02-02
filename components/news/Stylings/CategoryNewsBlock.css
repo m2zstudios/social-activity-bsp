@@ -1,0 +1,30 @@
+.category-news-block {
+  width: 260px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  height: 250px;
+}
+
+.news-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.news-title {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.read-more-inline {
+  color: red;
+  cursor: pointer;
+}
+
+.read-more-btn {
+  margin-top: 6px;
+  width: 100%;
+}
+.read-more-btn:hover {
+  background-color: #f0f0f0;
+}

@@ -1,0 +1,46 @@
+.category-heroic {
+  position: relative;
+  width: 100%;
+  height: 480px; /* ⬅️ height increased */
+  margin-bottom: 35px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.category-heroic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* keep */
+  object-position: center top; /* ⬅️ face cut fix */
+}
+.category-heroic .overlay {
+ position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 24px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85),
+    rgba(0, 0, 0, 0.15)
+  );
+  color: #fff;
+}
+
+.category-heroic h2 {
+  font-size: 26px;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  max-width: 90%;
+}
+
+.category-heroic a {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffd54f;
+  text-decoration: none;
+}
+
+.category-heroic a:hover {
+  text-decoration: underline;
+}
