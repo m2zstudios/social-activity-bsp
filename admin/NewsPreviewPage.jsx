@@ -146,10 +146,15 @@ const NewsPreviewPage = ({ news }) => {
         const res = await databases.listDocuments(
           DATABASE_ID,
           POSTS_COLLECTION_ID,
-          [Query.search("title", searchTerm)]
+          [Query.limit(50)]
         );
 
-        const results = (res.documents || []).map((doc) => {
+        const normalizedTerm = searchTerm.trim().toLowerCase();
+        const results = (res.documents || [])
+          .filter((doc) =>
+            (doc.title || "").toLowerCase().includes(normalizedTerm)
+          )
+          .map((doc) => {
           let image = null;
           try {
             const parsedBlocks =
