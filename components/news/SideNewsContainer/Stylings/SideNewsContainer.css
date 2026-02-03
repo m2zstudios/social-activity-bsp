@@ -14,3 +14,10 @@
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
 }
+
+.side-news-error {
+  color: #b00020;
+  font-size: 13px;
+  padding: 8px;
+  margin: 0;
+}
