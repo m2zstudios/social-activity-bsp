@@ -1,0 +1,264 @@
+.manage-container {
+  padding: 32px 24px 64px;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: #0f172a;
+}
+
+.manage-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.manage-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.manage-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.manage-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.manage-section-header h2 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+}
+
+.manage-section-header p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.manage-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.manage-grid-half {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.manage-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manage-group label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.manage-group input[type="text"],
+.manage-group textarea,
+.manage-group input[type="file"] {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.manage-group textarea {
+  resize: vertical;
+}
+
+.manage-help {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.manage-file-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px dashed #cbd5f5;
+}
+
+.manage-file-preview img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.manage-color-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.manage-color-input input[type="color"] {
+  width: 48px;
+  height: 40px;
+  border: none;
+  background: none;
+}
+
+.manage-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.manage-save-btn {
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.manage-save-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.manage-save-btn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.manage-secondary-btn {
+  background: #fff;
+  border: 1px solid #cbd5f5;
+  color: #0f172a;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.manage-secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.manage-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.manage-saved {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.breaking-section .manage-save-btn {
+  margin-top: 16px;
+}
+
+.breaking-current {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.breaking-current strong {
+  color: #0f172a;
+}
+
+.breaking-options {
+  display: grid;
+  gap: 12px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.breaking-option-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.breaking-option-card input {
+  margin-top: 4px;
+}
+
+.breaking-option-card h4 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.breaking-option-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.breaking-option-card.selected {
+  border-color: #0f172a;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.manage-alert {
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.manage-alert.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.manage-alert.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.manage-loading {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .manage-container {
+    padding: 24px 16px 48px;
+  }
+
+  .manage-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .manage-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

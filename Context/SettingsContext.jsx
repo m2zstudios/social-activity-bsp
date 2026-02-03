@@ -11,6 +11,7 @@ export const SettingsProvider = ({ children }) => {
           siteTitle: "My Site",
           siteDescription: "",
           favicon: "",
+          logo: "",
           themeColor: "#0d6efd",
           maintenanceMode: false,
         };
