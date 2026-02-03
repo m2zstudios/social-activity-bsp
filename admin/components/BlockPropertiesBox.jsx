@@ -5,6 +5,7 @@ import LocationPicker from "../components/LocationPicker";
 import Flatpickr from "react-flatpickr";
 
 import ImageUploader from "./ImageUploader";
+import VideoUploader from "./VideoUploader";
 const BlockPropertiesBox = ({
   mode = "block",
   postSettings,
@@ -17,6 +18,7 @@ const BlockPropertiesBox = ({
 }) => {
 
   const [showImageUploader, setShowImageUploader] = useState(false);
+  const [showVideoUploader, setShowVideoUploader] = useState(false);
   const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
 
 //tags state
@@ -897,6 +899,89 @@ if (mode === "post") {
     </>
   );
 
+
+      case "video":
+  return (
+    <>
+      <label>Alignment</label>
+      <select
+        value={selectedBlock.align || "center"}
+        onChange={(e) => update("align", e.target.value)}
+      >
+        <option value="center">Center</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+      </select>
+
+      <label>Caption</label>
+      <input
+        value={selectedBlock.caption || ""}
+        onChange={(e) => update("caption", e.target.value)}
+      />
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={selectedBlock.controls !== false}
+          onChange={(e) => update("controls", e.target.checked)}
+        />
+        Show Controls
+      </label>
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={selectedBlock.autoplay || false}
+          onChange={(e) => update("autoplay", e.target.checked)}
+        />
+        Autoplay
+      </label>
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={selectedBlock.muted || false}
+          onChange={(e) => update("muted", e.target.checked)}
+        />
+        Muted
+      </label>
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={selectedBlock.loop || false}
+          onChange={(e) => update("loop", e.target.checked)}
+        />
+        Loop
+      </label>
+
+      <button
+        className="replace-image-btn"
+        onClick={() => setShowVideoUploader(true)}
+      >
+        Replace Video
+      </button>
+
+      {showVideoUploader && (
+        <div className="image-uploader-overlay">
+          <VideoUploader
+            onUpload={(uploadedVideos) => {
+              const vid = uploadedVideos[0];
+
+              onUpdateBlock({
+                ...selectedBlock,
+                fileId: vid.fileId,
+                src: vid.src,
+              });
+
+              setShowVideoUploader(false);
+            }}
+            onClose={() => setShowVideoUploader(false)}
+          />
+        </div>
+      )}
+    </>
+  );
 
       case "gallery": {
   const images = selectedBlock.images || [];

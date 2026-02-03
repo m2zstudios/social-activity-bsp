@@ -21,6 +21,7 @@ import {
 import { ID } from "appwrite";
 import { account } from "../admin/appwrite/auth";
 import ImageUploader from "./components/ImageUploader";
+import VideoUploader from "./components/VideoUploader";
 
 
 
@@ -29,6 +30,7 @@ const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [selectedBlockId, setSelectedBlockId] = useState(null);
   const [showImageUploader, setShowImageUploader] = useState(false);
+  const [showVideoUploader, setShowVideoUploader] = useState(false);
   const [theme, setTheme] = useState("dark");
   const [tabs, setTabs] = useState([
   { id: "create", label: "Create Post", type: "editor" }
@@ -390,6 +392,11 @@ const deleteBlock = async (block) => {
       method: "DELETE",
     });
   }
+  if (block.type === "video" && block.fileId) {
+    await fetch(`http://localhost:5000/upload/${block.fileId}`, {
+      method: "DELETE",
+    });
+  }
 
   setBlocks(prev => prev.filter(b => b.id !== block.id));
   setSelectedBlockId(null);
@@ -635,6 +642,7 @@ const handlePublish = async () => {
       <NewsBlocksStrip
        onAddBlock={addBlock}
        onAddImage={() => setShowImageUploader(true)}
+       onAddVideo={() => setShowVideoUploader(true)}
        onOpenSettings={() => setActivePanel("post")}
   onSaveDraft={() =>
     setPostSettings((p) => ({ ...p, status: "draft" }))
@@ -739,6 +747,30 @@ const handlePublish = async () => {
 }}
 
     onClose={() => setShowImageUploader(false)}
+  />
+)}
+
+{showVideoUploader && (
+  <VideoUploader
+    onUpload={(uploadedVideos) => {
+      const vid = uploadedVideos[0];
+
+      addBlock({
+        id: Date.now(),
+        type: "video",
+        fileId: vid.fileId,
+        src: vid.src,
+        caption: "",
+        align: "center",
+        controls: true,
+        autoplay: false,
+        muted: false,
+        loop: false,
+      });
+
+      setShowVideoUploader(false);
+    }}
+    onClose={() => setShowVideoUploader(false)}
   />
 )}
 

@@ -531,6 +531,37 @@ case "image":
 
 
 
+      case "video":
+        return withLink(
+          block,
+          <div className="lp-video">
+            <div
+              className="lp-video-inner"
+              style={{
+                justifyContent:
+                  block.align === "left"
+                    ? "flex-start"
+                    : block.align === "right"
+                    ? "flex-end"
+                    : "center",
+              }}
+            >
+              <video
+                src={block.src}
+                controls={block.controls !== false}
+                autoPlay={block.autoplay}
+                muted={block.muted}
+                loop={block.loop}
+                playsInline
+                className="lp-video-player"
+              />
+            </div>
+            {block.caption && (
+              <div className="lp-video-caption">{block.caption}</div>
+            )}
+          </div>
+        );
+
       case "gallery": {
   const images = block.images || [];
 
