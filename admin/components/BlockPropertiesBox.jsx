@@ -21,6 +21,50 @@ const BlockPropertiesBox = ({
   const [showVideoUploader, setShowVideoUploader] = useState(false);
   const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
 
+  const parseYouTubeInput = (input) => {
+    if (!input) return null;
+    const trimmed = input.trim();
+
+    if (trimmed.includes("<iframe")) {
+      const srcMatch = trimmed.match(/src="([^"]+)"/i);
+      const titleMatch = trimmed.match(/title="([^"]+)"/i);
+      const widthMatch = trimmed.match(/width="([^"]+)"/i);
+      const heightMatch = trimmed.match(/height="([^"]+)"/i);
+      const allowMatch = trimmed.match(/allow="([^"]+)"/i);
+      const referrerMatch = trimmed.match(/referrerpolicy="([^"]+)"/i);
+      const allowFullScreen = /allowfullscreen/i.test(trimmed);
+
+      return {
+        src: srcMatch?.[1] || "",
+        title: titleMatch?.[1] || "YouTube video",
+        width: widthMatch?.[1] || "100%",
+        height: heightMatch?.[1] || "100%",
+        allow: allowMatch?.[1] || "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+        referrerPolicy: referrerMatch?.[1] || "strict-origin-when-cross-origin",
+        allowFullScreen,
+      };
+    }
+
+    try {
+      const url = new URL(trimmed);
+      if (url.hostname.includes("youtu.be")) {
+        const id = url.pathname.replace("/", "");
+        return { src: `https://www.youtube.com/embed/${id}` };
+      }
+      if (url.searchParams.get("v")) {
+        const id = url.searchParams.get("v");
+        return { src: `https://www.youtube.com/embed/${id}` };
+      }
+      if (url.pathname.includes("/embed/")) {
+        return { src: trimmed };
+      }
+    } catch (err) {
+      console.error("Invalid YouTube URL", err);
+    }
+
+    return null;
+  };
+
 //tags state
 const [tagsText, setTagsText] = useState(
   (postSettings.tags || []).join(", ")
@@ -980,6 +1024,75 @@ if (mode === "post") {
           />
         </div>
       )}
+    </>
+  );
+
+      case "youtube":
+  return (
+    <>
+      <label>Embed URL or iframe</label>
+      <textarea
+        placeholder="Paste YouTube URL or iframe embed code"
+        value={selectedBlock.src || ""}
+        onChange={(e) => update("src", e.target.value)}
+        onBlur={(e) => {
+          const parsed = parseYouTubeInput(e.target.value);
+          if (!parsed?.src) return;
+          onUpdateBlock({
+            ...selectedBlock,
+            src: parsed.src,
+            title: parsed.title || selectedBlock.title || "YouTube video",
+            width: parsed.width || selectedBlock.width,
+            height: parsed.height || selectedBlock.height,
+            allow: parsed.allow || selectedBlock.allow,
+            referrerPolicy:
+              parsed.referrerPolicy || selectedBlock.referrerPolicy,
+            allowFullScreen:
+              parsed.allowFullScreen !== undefined
+                ? parsed.allowFullScreen
+                : selectedBlock.allowFullScreen,
+          });
+        }}
+      />
+
+      <label>Title</label>
+      <input
+        value={selectedBlock.title || ""}
+        onChange={(e) => update("title", e.target.value)}
+      />
+
+      <label>Caption</label>
+      <input
+        value={selectedBlock.caption || ""}
+        onChange={(e) => update("caption", e.target.value)}
+      />
+
+      <label>Alignment</label>
+      <select
+        value={selectedBlock.align || "center"}
+        onChange={(e) => update("align", e.target.value)}
+      >
+        <option value="center">Center</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+      </select>
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={selectedBlock.allowFullScreen !== false}
+          onChange={(e) => update("allowFullScreen", e.target.checked)}
+        />
+        Allow Fullscreen
+      </label>
+
+      <label>Referrer Policy</label>
+      <input
+        value={
+          selectedBlock.referrerPolicy || "strict-origin-when-cross-origin"
+        }
+        onChange={(e) => update("referrerPolicy", e.target.value)}
+      />
     </>
   );
 

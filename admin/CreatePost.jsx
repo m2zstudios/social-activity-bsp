@@ -85,6 +85,50 @@ const [paragraphSplitterState, setParagraphSplitterState] = useState({
   });
   const [blocks, setBlocks] = useState([]);
 
+  const parseYouTubeInput = (input) => {
+    if (!input) return null;
+    const trimmed = input.trim();
+
+    if (trimmed.includes("<iframe")) {
+      const srcMatch = trimmed.match(/src="([^"]+)"/i);
+      const titleMatch = trimmed.match(/title="([^"]+)"/i);
+      const widthMatch = trimmed.match(/width="([^"]+)"/i);
+      const heightMatch = trimmed.match(/height="([^"]+)"/i);
+      const allowMatch = trimmed.match(/allow="([^"]+)"/i);
+      const referrerMatch = trimmed.match(/referrerpolicy="([^"]+)"/i);
+      const allowFullScreen = /allowfullscreen/i.test(trimmed);
+
+      return {
+        src: srcMatch?.[1] || "",
+        title: titleMatch?.[1] || "YouTube video",
+        width: widthMatch?.[1] || "100%",
+        height: heightMatch?.[1] || "100%",
+        allow: allowMatch?.[1] || "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+        referrerPolicy: referrerMatch?.[1] || "strict-origin-when-cross-origin",
+        allowFullScreen,
+      };
+    }
+
+    try {
+      const url = new URL(trimmed);
+      if (url.hostname.includes("youtu.be")) {
+        const id = url.pathname.replace("/", "");
+        return { src: `https://www.youtube.com/embed/${id}` };
+      }
+      if (url.searchParams.get("v")) {
+        const id = url.searchParams.get("v");
+        return { src: `https://www.youtube.com/embed/${id}` };
+      }
+      if (url.pathname.includes("/embed/")) {
+        return { src: trimmed };
+      }
+    } catch (err) {
+      console.error("Invalid YouTube URL", err);
+    }
+
+    return null;
+  };
+
   //safety JSON parse
   const safeJSONParseWithDefault = (value, fallback) => {
   if (!value || typeof value !== "string") return fallback;
@@ -643,6 +687,36 @@ const handlePublish = async () => {
        onAddBlock={addBlock}
        onAddImage={() => setShowImageUploader(true)}
        onAddVideo={() => setShowVideoUploader(true)}
+       onAddYoutube={() => {
+         const input = window.prompt(
+           "Paste a YouTube URL or iframe embed code"
+         );
+         const parsed = parseYouTubeInput(input);
+         if (!parsed?.src) {
+           alert("Please provide a valid YouTube URL or embed code.");
+           return;
+         }
+
+         addBlock({
+           id: Date.now(),
+           type: "youtube",
+           src: parsed.src,
+           title: parsed.title || "YouTube video",
+           width: parsed.width || "100%",
+           height: parsed.height || "100%",
+           allow:
+             parsed.allow ||
+             "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+           referrerPolicy:
+             parsed.referrerPolicy || "strict-origin-when-cross-origin",
+           allowFullScreen:
+             parsed.allowFullScreen !== undefined
+               ? parsed.allowFullScreen
+               : true,
+           align: "center",
+           caption: "",
+         });
+       }}
        onOpenSettings={() => setActivePanel("post")}
   onSaveDraft={() =>
     setPostSettings((p) => ({ ...p, status: "draft" }))

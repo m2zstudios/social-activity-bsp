@@ -5,6 +5,7 @@ const BLOCKS = [
   { type: "paragraph", label: "Paragraph", icon: "📝" },
   { type: "image", label: "Image", icon: "🖼️" },
   { type: "video", label: "Video", icon: "🎬" },
+  { type: "youtube", label: "YouTube", icon: "▶️" },
   { type: "gallery", label: "Gallery", icon: "🖼️🏞️🌄" },
   { type: "quote", label: "Quote", icon: "❝" },
   { type: "subheading", label: "Subheading", icon: "🔖" },
@@ -16,6 +17,7 @@ const NewsBlocksStrip = ({
   onAddBlock,
   onAddImage,
   onAddVideo,
+  onAddYoutube,
   onOpenSettings,
   onSaveDraft,
 }) => {
@@ -115,6 +117,10 @@ const NewsBlocksStrip = ({
                 }
                 if (block.type === "video") {
                   onAddVideo();
+                  return;
+                }
+                if (block.type === "youtube") {
+                  onAddYoutube();
                   return;
                 }
 
