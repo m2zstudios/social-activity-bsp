@@ -1,5 +1,7 @@
 .side-news-container {
   border: 1px solid #999;
+  max-width: 320px;
+  width: 100%;
 }
 
 .side-news-header {
@@ -13,4 +15,11 @@
 .side-news-item {
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
+}
+
+.side-news-error {
+  color: #b00020;
+  font-size: 13px;
+  padding: 8px;
+  margin: 0;
 }
