@@ -143,6 +143,68 @@
   text-align: center;
 }
 
+/* Video */
+.lp-video {
+  background: #0f172a;
+  border: 1px solid #1f2a44;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  overflow: visible;
+}
+
+.lp-video-inner {
+  display: flex;
+  width: 100%;
+}
+
+.lp-video-player {
+  width: min(100%, 720px);
+  border-radius: 8px;
+  background: #0b1220;
+}
+
+.lp-video-caption {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* YouTube Embed */
+.lp-embed {
+  background: #0f172a;
+  border: 1px solid #1f2a44;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  overflow: visible;
+}
+
+.lp-embed-inner {
+  display: flex;
+  width: 100%;
+}
+
+.lp-embed-frame {
+  width: min(100%, 720px);
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-radius: 8px;
+  background: #0b1220;
+}
+
+.lp-embed-caption {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
 /* Empty Gallery Placeholder */
 .lp-gallery-empty {
   height: 140px;

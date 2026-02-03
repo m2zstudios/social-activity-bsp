@@ -4,6 +4,8 @@ import "./Stylings/NewsBlocksStrip.css";
 const BLOCKS = [
   { type: "paragraph", label: "Paragraph", icon: "📝" },
   { type: "image", label: "Image", icon: "🖼️" },
+  { type: "video", label: "Video", icon: "🎬" },
+  { type: "youtube", label: "YouTube", icon: "▶️" },
   { type: "gallery", label: "Gallery", icon: "🖼️🏞️🌄" },
   { type: "quote", label: "Quote", icon: "❝" },
   { type: "subheading", label: "Subheading", icon: "🔖" },
@@ -11,7 +13,14 @@ const BLOCKS = [
 ];
 
 
-const NewsBlocksStrip = ({ onAddBlock, onAddImage,onOpenSettings,onSaveDraft }) => {
+const NewsBlocksStrip = ({
+  onAddBlock,
+  onAddImage,
+  onAddVideo,
+  onAddYoutube,
+  onOpenSettings,
+  onSaveDraft,
+}) => {
   const scrollRef = useRef(null);
 
   const handleAdd = (type, variant = null) => {
@@ -104,6 +113,14 @@ const NewsBlocksStrip = ({ onAddBlock, onAddImage,onOpenSettings,onSaveDraft }) 
                 // IMAGE handled separately
                 if (block.type === "image") {
                   onAddImage();
+                  return;
+                }
+                if (block.type === "video") {
+                  onAddVideo();
+                  return;
+                }
+                if (block.type === "youtube") {
+                  onAddYoutube();
                   return;
                 }
 
