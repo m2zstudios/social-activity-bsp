@@ -1,5 +1,7 @@
 .side-news-container {
   border: 1px solid #999;
+  max-width: 320px;
+  width: 100%;
 }
 
 .side-news-header {

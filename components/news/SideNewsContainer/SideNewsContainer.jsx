@@ -7,7 +7,7 @@ import { databases, Query } from "../../../admin/appwrite/appwrite";
 import { getFirstImageFromBlocks } from "../../../admin/components/utils/newsHelpers";
 import "./Stylings/SideNewsContainer.css";
 
-const MAX_NEWS_ITEMS = 5;
+const MAX_NEWS_ITEMS = 2;
 
 export default function SideNewsContainer() {
   const [newsItems, setNewsItems] = useState([]);
