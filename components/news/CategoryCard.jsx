@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import "./Stylings/CategoryCard.css";
 
 const CategoryCard = ({ news }) => {
+  const isLoading = Boolean(news?.isLoading);
+
   return (
     <div className="category-card">
       <div className="CardImageContainer">
@@ -13,9 +15,13 @@ const CategoryCard = ({ news }) => {
       </div>
       <h3>{news.title}</h3>
 
-      <Link to={`/category/${news.category}/${news.id}`}>
-        Read More
-      </Link>
+      {isLoading ? (
+        <span>Loading...</span>
+      ) : (
+        <Link to={`/category/${news.category}/${news.id}`}>
+          Read More
+        </Link>
+      )}
     </div>
   );
 };

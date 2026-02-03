@@ -14,6 +14,18 @@
   object-fit: cover; /* keep */
   object-position: center top; /* ⬅️ face cut fix */
 }
+
+.category-hero-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, #111, #2b2b2b, #111);
+  background-size: 200% 200%;
+  animation: hero-shimmer 1.5s ease infinite;
+}
+
+.category-heroic.loading img {
+  display: none;
+}
 .category-heroic .overlay {
  position: absolute;
   bottom: 0;
@@ -25,6 +37,27 @@
     rgba(0, 0, 0, 0.15)
   );
   color: #fff;
+}
+
+.category-hero-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+
+.category-hero-tag {
+  background: rgba(255, 213, 79, 0.18);
+  color: #ffd54f;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.category-hero-date {
+  color: #f5f5f5;
 }
 
 .category-heroic h2 {
@@ -43,4 +76,16 @@
 
 .category-heroic a:hover {
   text-decoration: underline;
+}
+
+@keyframes hero-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

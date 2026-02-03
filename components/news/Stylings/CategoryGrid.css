@@ -3,3 +3,9 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px; /* ⬅️ more breathing space */
 }
+
+.category-grid-empty {
+  padding: 16px 0;
+  color: #666;
+  font-size: 15px;
+}
