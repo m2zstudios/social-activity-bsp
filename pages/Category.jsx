@@ -26,24 +26,25 @@ const Category = () => {
           [
             Query.equal("category", name),
             Query.equal("status", "published"),
-            Query.orderDesc("publishedAt"),
+            Query.orderDesc("createdDate"),
             Query.limit(50),
           ]
         );
 
         const mapped = res.documents.map((doc) => {
           const heroImage = doc.hero || getFirstImageFromBlocks(doc.blocks);
+          const createdAt = doc.createdDate || doc.$createdAt;
           return {
             id: doc.$id,
             category: doc.category,
             title: doc.title,
             newsimg: heroImage || "/placeholder.png",
-            uploadedAt: doc.publishedAt || doc.$createdAt,
+            createdAt,
           };
         });
 
         const sorted = mapped.sort(
-          (a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
 
         if (isMounted) {

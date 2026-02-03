@@ -27,19 +27,20 @@ const HomeNewsCategory2 = ({ categoryName }) => {
           [
             Query.equal("category", categoryName),
             Query.equal("status", "published"),
-            Query.orderDesc("publishedAt"),
+            Query.orderDesc("createdDate"),
             Query.limit(MAX_PER_CATEGORY),
           ]
         );
 
         const mapped = res.documents.map((doc) => {
           const heroImage = doc.hero || getFirstImageFromBlocks(doc.blocks);
+          const createdAt = doc.createdDate || doc.$createdAt;
           return {
             id: doc.$id,
             category: doc.category,
             title: doc.title,
             newsimg: heroImage || "/placeholder.png",
-            uploadedAt: doc.publishedAt || doc.$createdAt,
+            createdAt,
           };
         });
 

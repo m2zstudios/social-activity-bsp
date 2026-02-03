@@ -6,8 +6,8 @@ const CategoryHero = ({ news, categoryName, isLoading = false }) => {
     return null;
   }
 
-  const publishedAt = news?.uploadedAt
-    ? new Date(news.uploadedAt).toLocaleDateString()
+  const publishedAt = news?.createdAt
+    ? new Date(news.createdAt).toLocaleDateString()
     : null;
 
   return (
