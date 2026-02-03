@@ -141,6 +141,13 @@
   font-size: 14px;
 }
 
+.breaking-loading {
+  display: inline-block;
+  margin: 6px 0 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 .read-more {
   color: #d00;
   font-weight: 600;
