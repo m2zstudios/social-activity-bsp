@@ -36,6 +36,7 @@ const Category = () => {
           const createdAt = doc.createdDate || doc.$createdAt;
           return {
             id: doc.$id,
+            slug: doc.slug || doc.$id,
             category: doc.category,
             title: doc.title,
             newsimg: heroImage || "/placeholder.png",

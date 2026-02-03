@@ -37,6 +37,7 @@ const HomeNewsCategory2 = ({ categoryName }) => {
           const createdAt = doc.createdDate || doc.$createdAt;
           return {
             id: doc.$id,
+            slug: doc.slug || doc.$id,
             category: doc.category,
             title: doc.title,
             newsimg: heroImage || "/placeholder.png",
@@ -72,6 +73,7 @@ const HomeNewsCategory2 = ({ categoryName }) => {
     if (isLoading) {
       return Array.from({ length: VISIBLE }, (_, idx) => ({
         id: `loading-${categoryName}-${idx}`,
+        slug: "",
         title: "Loading...",
         newsimg: "/placeholder.png",
       }));
@@ -120,9 +122,7 @@ const HomeNewsCategory2 = ({ categoryName }) => {
 
                 <button
                   className="rm-btn"
-                  onClick={() =>
-                    navigate(`/category/${categoryName}/${news.id}`)
-                  }
+                  onClick={() => navigate(`/news/${news.slug}`)}
                   disabled={isLoading || Boolean(error)}
                 >
                   Read More

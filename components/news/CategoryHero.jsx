@@ -36,7 +36,7 @@ const CategoryHero = ({ news, categoryName, isLoading = false }) => {
         </div>
         <h2>{news ? news.title : "Loading latest story..."}</h2>
         {news && (
-          <Link to={`/category/${news.category}/${news.id}`}>
+          <Link to={`/news/${news.slug}`}>
             Read Full Story
           </Link>
         )}

@@ -31,7 +31,7 @@ const CategoryCard = ({ news }) => {
         ) : (
           <Link
             className="category-card-link"
-            to={`/category/${news.category}/${news.id}`}
+            to={`/news/${news.slug}`}
           >
             Read More
           </Link>
