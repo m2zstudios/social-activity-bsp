@@ -32,6 +32,7 @@ const NewsPreviewPage = ({ news }) => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [stats, setStats] = useState({ likes: 0, shares: 0, comments: 0 });
   const [docId, setDocId] = useState(null);
+  const [relatedNews, setRelatedNews] = useState([]);
 
   const previewState = useMemo(() => {
     if (news) {
@@ -42,6 +43,7 @@ const NewsPreviewPage = ({ news }) => {
         author: news.author,
         createdDate: news.createdDate || news.publishedAt,
         stats: news.stats,
+        category: news.category,
         id: news.$id || news.id,
       };
     }
@@ -54,6 +56,7 @@ const NewsPreviewPage = ({ news }) => {
         author: location.state.author,
         createdDate: location.state.postSettings?.createdDate,
         stats: location.state.stats,
+        category: location.state.postSettings?.category,
         id: location.state.id,
       };
     }
@@ -157,6 +160,12 @@ const NewsPreviewPage = ({ news }) => {
       })
     : "Draft preview";
 
+  const displayCategory =
+    previewState?.category ||
+    news?.category ||
+    location.state?.postSettings?.category ||
+    "";
+
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSearchResults([]);
@@ -257,6 +266,58 @@ const NewsPreviewPage = ({ news }) => {
 
     return () => clearTimeout(timeout);
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (!displayCategory) {
+      setRelatedNews([]);
+      return;
+    }
+
+    const loadRelatedNews = async () => {
+      try {
+        const res = await databases.listDocuments(
+          DATABASE_ID,
+          POSTS_COLLECTION_ID,
+          [Query.equal("category", displayCategory), Query.limit(10)]
+        );
+
+        const results = (res.documents || [])
+          .filter((doc) => doc.$id !== docId)
+          .sort((a, b) => {
+            const aDate = new Date(a.createdDate || a.publishedAt || 0).getTime();
+            const bDate = new Date(b.createdDate || b.publishedAt || 0).getTime();
+            return bDate - aDate;
+          })
+          .slice(0, 4)
+          .map((doc) => {
+            let image = null;
+            try {
+              const parsedBlocks =
+                typeof doc.blocks === "string"
+                  ? JSON.parse(doc.blocks)
+                  : doc.blocks;
+              image =
+                parsedBlocks?.find((block) => block.type === "image")?.src || null;
+            } catch (error) {
+              image = null;
+            }
+
+            return {
+              id: doc.$id,
+              title: doc.title || "Untitled News",
+              image,
+              createdDate: doc.createdDate || doc.publishedAt,
+            };
+          });
+
+        setRelatedNews(results);
+      } catch (error) {
+        console.error("❌ Failed to load related news", error);
+      }
+    };
+
+    loadRelatedNews();
+  }, [displayCategory, docId]);
 
   const handleStatChange = async (key) => {
     const nextStats = {
@@ -829,6 +890,43 @@ const NewsPreviewPage = ({ news }) => {
                   <div className="np-preview-content">{renderBlock(block)}</div>
                 </div>
               ))
+            )}
+            {relatedNews.length > 0 && (
+              <div className="np-related">
+                <div className="np-related-title">You might also like</div>
+                <div className="np-related-grid">
+                  {relatedNews.map((item) => (
+                    <button
+                      key={item.id}
+                      className="np-related-card"
+                      onClick={() => navigate(`/news/${item.id}`)}
+                    >
+                      <div className="np-related-thumb">
+                        {item.image ? (
+                          <img src={item.image} alt={item.title} />
+                        ) : (
+                          <span>SA</span>
+                        )}
+                      </div>
+                      <div className="np-related-info">
+                        <div className="np-related-headline">{item.title}</div>
+                        {item.createdDate && (
+                          <div className="np-related-date">
+                            {new Date(item.createdDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
           </section>
         </main>
