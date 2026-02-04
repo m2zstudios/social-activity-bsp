@@ -30,6 +30,8 @@ const NewsPreviewPage = ({ news }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [stats, setStats] = useState({ likes: 0, shares: 0, comments: 0 });
+  const [docId, setDocId] = useState(null);
 
   const previewState = useMemo(() => {
     if (news) {
@@ -39,6 +41,8 @@ const NewsPreviewPage = ({ news }) => {
         title: news.title,
         author: news.author,
         createdDate: news.createdDate || news.publishedAt,
+        stats: news.stats,
+        id: news.$id || news.id,
       };
     }
 
@@ -49,11 +53,25 @@ const NewsPreviewPage = ({ news }) => {
         title: location.state.title,
         author: location.state.author,
         createdDate: location.state.postSettings?.createdDate,
+        stats: location.state.stats,
+        id: location.state.id,
       };
     }
 
     return null;
   }, [location.state, news]);
+
+  const parseStats = (value) => {
+    if (!value) return { likes: 0, shares: 0, comments: 0 };
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value);
+      } catch (error) {
+        return { likes: 0, shares: 0, comments: 0 };
+      }
+    }
+    return value;
+  };
 
   /* -------------------------------
      🔹 Fetch news from DB
@@ -62,6 +80,8 @@ const NewsPreviewPage = ({ news }) => {
     if (previewState) {
       setBlocks(previewState.blocks || []);
       setTheme(previewState.theme || "light");
+      setStats(parseStats(previewState.stats));
+      setDocId(previewState.id || null);
       setLoading(false);
       return;
     }
@@ -93,8 +113,12 @@ const NewsPreviewPage = ({ news }) => {
         const parsedBlocks =
           typeof doc?.blocks === "string" ? JSON.parse(doc.blocks) : doc?.blocks;
 
+        const parsedStats = parseStats(doc?.stats);
+
         setBlocks(parsedBlocks || []);
         setTheme(doc?.theme || "light");
+        setStats(parsedStats);
+        setDocId(doc?.$id || null);
       } catch (err) {
         console.error("❌ Failed to load news", err);
       } finally {
@@ -234,6 +258,29 @@ const NewsPreviewPage = ({ news }) => {
     return () => clearTimeout(timeout);
   }, [searchTerm]);
 
+  const handleStatChange = async (key) => {
+    const nextStats = {
+      ...stats,
+      [key]: (stats[key] || 0) + 1,
+    };
+
+    setStats(nextStats);
+
+    if (!docId) return;
+
+    try {
+      await databases.updateDocument(
+        DATABASE_ID,
+        POSTS_COLLECTION_ID,
+        docId,
+        {
+          stats: JSON.stringify(nextStats),
+        }
+      );
+    } catch (error) {
+      console.error("❌ Failed to update stats", error);
+    }
+  };
   /* -------------------------------
      🔹 Helpers
   -------------------------------- */
@@ -739,6 +786,32 @@ const NewsPreviewPage = ({ news }) => {
             <div className="np-article-meta">
               <span>{formattedDate}</span>
               <span>{displayAuthor?.name || "Social Activity BSP"}</span>
+            </div>
+            <div className="np-article-actions">
+              <button
+                className="np-action-button"
+                type="button"
+                onClick={() => handleStatChange("likes")}
+              >
+                👍 Like
+                <span className="np-action-count">{stats.likes || 0}</span>
+              </button>
+              <button
+                className="np-action-button"
+                type="button"
+                onClick={() => handleStatChange("shares")}
+              >
+                🔗 Share
+                <span className="np-action-count">{stats.shares || 0}</span>
+              </button>
+              <button
+                className="np-action-button"
+                type="button"
+                onClick={() => handleStatChange("comments")}
+              >
+                💬 Comments
+                <span className="np-action-count">{stats.comments || 0}</span>
+              </button>
             </div>
           </section>
 
