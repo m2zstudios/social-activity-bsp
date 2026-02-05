@@ -1,4 +1,4 @@
-import { Client, Databases, Storage,Query } from "appwrite";
+import { Client, Databases, Storage, Query, ID } from "appwrite";
 
 const client = new Client();
 
@@ -15,6 +15,10 @@ export const POSTS_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_POSTS_COLLECTION_ID;
 export const DRAFTS_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_DRAFTS_COLLECTION_ID;
+export const USERS_COLLECTION_ID =
+  import.meta.env.VITE_APPWRITE_USERS_COLLECTION_ID;
+export const COMMENTS_COLLECTION_ID =
+  import.meta.env.VITE_APPWRITE_COMMENTS_COLLECTION_ID;
 
 export const BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID;
-export { Query };
+export { Query, ID };

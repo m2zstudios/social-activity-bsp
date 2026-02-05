@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { databases, Query } from "../admin/appwrite/appwrite";
 import NewsPreviewPage from "../admin/NewsPreviewPage";
+import CommentsSection from "../components/news/CommentsSection";
 
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
@@ -70,7 +71,12 @@ const NewsDetails = () => {
   if (error) return <div className="news-error">{error}</div>;
   if (!news) return <div className="news-loading">Loading...</div>;
 
-  return <NewsPreviewPage news={news} />;
+  return (
+    <>
+      <NewsPreviewPage news={news} />
+      <CommentsSection postId={news.$id} />
+    </>
+  );
 };
 
 export default NewsDetails;
