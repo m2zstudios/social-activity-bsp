@@ -6,28 +6,9 @@ import "./auth.css";
 
 export default function AuthLayout() {
   const [mode, setMode] = useState("signin");
-  const [toast, setToast] = useState({ message: "", type: "" });
-
-  const showSignupDisabledToast = () => {
-    setMode("signup");
-    setToast({
-      message: "🚫 New account creation is currently not available.",
-      type: "error",
-    });
-
-    setTimeout(() => {
-      setToast({ message: "", type: "" });
-    }, 2500);
-  };
 
   return (
     <div className="auth-page">
-      {toast.message && (
-        <div className={`toast ${toast.type}`}>
-          {toast.message}
-        </div>
-      )}
-
       <div className="auth-card">
         {/* LEFT: AUTH FORM */}
         <div className="auth-form">
@@ -52,7 +33,7 @@ export default function AuthLayout() {
             </>
           ) : (
             <>
-              <SignUpForm onSignupBlocked={showSignupDisabledToast} />
+              <SignUpForm />
 
               <p className="switch-text">
                 Already have an account?{" "}
